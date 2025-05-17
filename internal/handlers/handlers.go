@@ -41,10 +41,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	io.WriteString(resFile, service.Convert(buf.String()))
-<<<<<<< HEAD
 	io.WriteString(w, service.Convert(buf.String()))
-=======
->>>>>>> f7200f1aee427e805a62a7097a0cd331fddf2b2a
 }
 
 func getFileDataFromForm(r *http.Request) (bytes.Buffer, error) {
