@@ -30,15 +30,31 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	buf, err := getFileDataFromForm(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	resFile, err := os.Create("res.txt")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	io.WriteString(resFile, service.Convert(buf.String()))
+}
+
+func getFileDataFromForm(r *http.Request) (bytes.Buffer, error) {
 	file, _, err := r.FormFile("myFile")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+		return *bytes.NewBuffer([]byte{}), err
 	}
 	defer file.Close()
 
 	var buf bytes.Buffer
-	io.Copy(&buf, file)
+	_, err = io.Copy(&buf, file)
+	if err != nil {
+		return *bytes.NewBuffer([]byte{}), err
+	}
 
-	io.WriteString(w, service.Convert(buf.String()))
+	return buf, nil
 }
