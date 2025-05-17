@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"bytes"
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/service"
 )
 
 func MainHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,11 +30,15 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, header, err := r.FormFile("myFile")
+	file, _, err := r.FormFile("myFile")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	defer file.Close()
 
-	io.WriteString(w, header.Filename)
+	var buf bytes.Buffer
+	io.Copy(&buf, file)
+
+	io.WriteString(w, service.Convert(buf.String()))
 }
