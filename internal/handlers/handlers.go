@@ -9,6 +9,11 @@ import (
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/service"
 )
 
+type fileComponents struct {
+	buffer     bytes.Buffer
+	resultFile *os.File
+}
+
 func MainHandler(w http.ResponseWriter, r *http.Request) {
 	resp, err := readPageFile()
 	if err != nil {
@@ -40,8 +45,15 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	io.WriteString(resFile, service.Convert(buf.String()))
-	io.WriteString(w, service.Convert(buf.String()))
+	fileComps := fileComponents{
+		buffer:     buf,
+		resultFile: resFile,
+	}
+
+	err = writeData(fileComps, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func getFileDataFromForm(r *http.Request) (bytes.Buffer, error) {
@@ -58,4 +70,17 @@ func getFileDataFromForm(r *http.Request) (bytes.Buffer, error) {
 	}
 
 	return buf, nil
+}
+
+func writeData(fileComps fileComponents, w http.ResponseWriter) error {
+	_, err := io.WriteString(fileComps.resultFile, service.Convert(fileComps.buffer.String()))
+	if err != nil {
+		return err
+	}
+	_, err = io.WriteString(w, service.Convert(fileComps.buffer.String()))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
