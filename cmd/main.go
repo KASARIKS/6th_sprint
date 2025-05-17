@@ -4,15 +4,15 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/handlers"
+	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/server"
 )
 
 func main() {
-	http.HandleFunc("/", handlers.MainHandler)
-	http.HandleFunc("/upload", handlers.UploadHandler)
+	logger := log.Logger{}
+	router := server.CreateServer(&logger)
 
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(router.Server.Addr, router.Server.Handler)
 	if err != nil {
-		log.Fatal(err)
+		router.Logger.Fatal(err)
 	}
 }
