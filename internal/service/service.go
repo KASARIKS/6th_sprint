@@ -12,9 +12,8 @@ func Convert(text string) string {
 }
 
 type convertedText struct {
-	sourceText  string
-	checkString string
-	res         string
+	sourceText string
+	res        string
 }
 
 func newConvertedText(text string) *convertedText {
@@ -28,18 +27,10 @@ func newConvertedText(text string) *convertedText {
 }
 
 func (convText *convertedText) convertText() {
-	convText.makeCheckString()
-	convText.makeRes()
-}
-
-func (convText *convertedText) makeCheckString() {
-	convText.checkString = strings.Replace(convText.sourceText, ".", "", -1)
-	convText.checkString = strings.Replace(convText.checkString, "-", "", -1)
-	convText.checkString = strings.Replace(convText.checkString, " ", "", -1)
-}
-
-func (convText *convertedText) makeRes() {
-	if convText.checkString == "" {
+	f := func(r rune) bool {
+		return r == '.' || r == '-'
+	}
+	if strings.ContainsFunc(convText.sourceText, f) {
 		convText.res = morse.ToText(convText.sourceText)
 	} else {
 		convText.res = morse.ToMorse(convText.sourceText)

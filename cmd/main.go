@@ -9,6 +9,7 @@ import (
 
 func main() {
 	logger := log.Logger{}
+
 	router := server.CreateServer(&logger)
 
 	err := http.ListenAndServe(router.Server.Addr, router.Server.Handler)

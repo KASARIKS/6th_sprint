@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/service"
 )
@@ -15,18 +16,7 @@ type fileComponents struct {
 }
 
 func MainHandler(w http.ResponseWriter, r *http.Request) {
-	resp, err := readPageFile()
-	if err != nil {
-		http.Error(w, "Internal problems! Try later or contact support.", http.StatusInternalServerError)
-		return
-	}
-
-	w.Write(resp)
-}
-
-func readPageFile() ([]byte, error) {
-	page, err := os.ReadFile("index.html")
-	return page, err
+	http.ServeFile(w, r, "./index.html")
 }
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +30,7 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
-	resFile, err := os.Create("res.txt")
+	resFile, err := os.Create(time.Now().Format("02_01_2006_15_04_05") + ".txt")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
